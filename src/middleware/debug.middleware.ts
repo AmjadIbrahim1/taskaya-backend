@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 export const debugMiddleware = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): void => {
   console.log("\n===========================================");
