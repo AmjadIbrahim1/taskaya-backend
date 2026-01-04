@@ -1,11 +1,11 @@
-// backend/src/controllers/task.controller.ts - FIXED: Use AuthRequest
+// backend/src/controllers/task.controller.ts - FIXED: استخدام JWTRequest
 import { Response } from "express";
 import { prisma } from "../config/db";
-import { AuthRequest } from "../middleware/dual-auth.middleware";
+import { JWTRequest } from "../middleware/jwt.middleware";
 
 // Add a new task
 export const addTask = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -21,7 +21,7 @@ export const addTask = async (
       return;
     }
 
-    console.log(`📝 Creating task for user (${req.authMethod}):`, req.userEmail);
+    console.log(`📝 Creating task for user:`, req.userEmail);
 
     const task = await prisma.task.create({
       data: {
@@ -51,7 +51,7 @@ export const addTask = async (
 
 // Get all tasks for user
 export const getTasks = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -60,7 +60,7 @@ export const getTasks = async (
       return;
     }
 
-    console.log(`📋 Fetching tasks for user (${req.authMethod}):`, req.userEmail);
+    console.log(`📋 Fetching tasks for user:`, req.userEmail);
 
     const tasks = await prisma.task.findMany({
       where: { userId: req.userId },
@@ -75,12 +75,7 @@ export const getTasks = async (
 
     res.json({ 
       tasks, 
-      count: tasks.length,
-      authMethod: req.authMethod,
-      user: {
-        email: req.userEmail,
-        name: req.userName,
-      }
+      count: tasks.length
     });
   } catch (error) {
     console.error("❌ Get tasks error:", error);
@@ -90,7 +85,7 @@ export const getTasks = async (
 
 // Update a task
 export const updateTask = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -122,7 +117,7 @@ export const updateTask = async (
       return;
     }
 
-    console.log(`✏️ Updating task ${id} for user (${req.authMethod}):`, req.userEmail);
+    console.log(`✏️ Updating task ${id} for user:`, req.userEmail);
 
     const updatedTask = await prisma.task.update({
       where: { id: parseInt(id) },
@@ -154,7 +149,7 @@ export const updateTask = async (
 
 // Delete a task
 export const deleteTask = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -185,7 +180,7 @@ export const deleteTask = async (
       return;
     }
 
-    console.log(`🗑️ Deleting task ${id} for user (${req.authMethod}):`, req.userEmail);
+    console.log(`🗑️ Deleting task ${id} for user:`, req.userEmail);
 
     await prisma.task.delete({ 
       where: { id: parseInt(id) } 
@@ -205,7 +200,7 @@ export const deleteTask = async (
 
 // Get completed tasks
 export const getCompletedTasks = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -214,7 +209,7 @@ export const getCompletedTasks = async (
       return;
     }
 
-    console.log(`✅ Fetching completed tasks for user (${req.authMethod}):`, req.userEmail);
+    console.log(`✅ Fetching completed tasks for user:`, req.userEmail);
 
     const tasks = await prisma.task.findMany({
       where: {
@@ -238,7 +233,7 @@ export const getCompletedTasks = async (
 
 // Get urgent tasks
 export const getUrgentTasks = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -247,7 +242,7 @@ export const getUrgentTasks = async (
       return;
     }
 
-    console.log(`🔥 Fetching urgent tasks for user (${req.authMethod}):`, req.userEmail);
+    console.log(`🔥 Fetching urgent tasks for user:`, req.userEmail);
 
     const tasks = await prisma.task.findMany({
       where: {
@@ -274,7 +269,7 @@ export const getUrgentTasks = async (
 
 // Search tasks
 export const searchTasks = async (
-  req: AuthRequest,
+  req: JWTRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -290,7 +285,7 @@ export const searchTasks = async (
       return;
     }
 
-    console.log(`🔍 Searching tasks for user (${req.authMethod}):`, req.userEmail, "query:", q);
+    console.log(`🔍 Searching tasks for user:`, req.userEmail, "query:", q);
 
     const tasks = await prisma.task.findMany({
       where: {
