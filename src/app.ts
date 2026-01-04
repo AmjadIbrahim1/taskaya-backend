@@ -1,12 +1,17 @@
-// backend/src/app.ts - FIXED FOR RAILWAY
+// backend/src/app.ts - FIXED FOR RAILWAY WITH DEBUG
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
+import { debugMiddleware } from "./middleware/debug.middleware";
 
 dotenv.config();
 const app = express();
+
+console.log("\n🚀 Starting Taskaya API...");
+console.log("Environment:", process.env.NODE_ENV || "development");
+console.log("Frontend URL:", process.env.FRONTEND_URL);
 
 // ✅ FIXED: Railway-compatible CORS
 const allowedOrigins = [
@@ -42,9 +47,14 @@ app.options("*", cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Debug middleware (only in development)
+if (process.env.NODE_ENV !== "production") {
+  app.use(debugMiddleware);
+}
+
 // Request logging middleware
 app.use((req, _res, next) => {
-  console.log(`📨 ${req.method} ${req.path}`);
+  console.log(`📨 ${req.method} ${req.originalUrl}`);
   next();
 });
 
@@ -67,8 +77,17 @@ app.get("/health", (_req, res) => {
 });
 
 // Routes
+console.log("\n📍 Registering routes...");
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+console.log("✅ Routes registered:");
+console.log("   - POST /api/auth/register");
+console.log("   - POST /api/auth/login");
+console.log("   - POST /api/auth/refresh");
+console.log("   - POST /api/auth/logout");
+console.log("   - GET  /api/tasks");
+console.log("   - POST /api/tasks");
+console.log("   - ... (other task routes)\n");
 
 // 404 handler
 app.use((_req, res) => {
