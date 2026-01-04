@@ -4,11 +4,12 @@
   "description": "Task management API with Prisma and JWT authentication",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc && prisma generate",
+    "start": "node dist/server.js",
+    "postinstall": "prisma generate",
     "dev:backend": "ts-node-dev --respawn --transpile-only src/server.ts",
     "dev:frontend": "cd ../frontend && npm run dev",
-    "build": "tsc",
-    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start:frontend": "cd ../frontend && npm run dev",
     "serve": "node dist/server.js",
@@ -19,8 +20,8 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:reset": "prisma migrate reset",
-    "db:push": "prisma db push",
-    "postinstall": "prisma generate"
+    "db:push": "prisma db push"
+    
   },
   "keywords": [
     "express",
