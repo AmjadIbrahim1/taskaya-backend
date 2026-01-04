@@ -5,23 +5,22 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc && prisma generate",
+    "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
-    "postinstall": "prisma generate",
+    "postinstall": "npx prisma generate",
     "dev:backend": "ts-node-dev --respawn --transpile-only src/server.ts",
     "dev:frontend": "cd ../frontend && npm run dev",
     "start:backend": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start:frontend": "cd ../frontend && npm run dev",
     "serve": "node dist/server.js",
     "clean": "rm -rf dist",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate:prod": "prisma migrate deploy",
-    "prisma:studio": "prisma studio",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:migrate:prod": "npx prisma migrate deploy",
+    "prisma:studio": "npx prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
-    "prisma:reset": "prisma migrate reset",
-    "db:push": "prisma db push"
-    
+    "prisma:reset": "npx prisma migrate reset",
+    "db:push": "npx prisma db push"
   },
   "keywords": [
     "express",
