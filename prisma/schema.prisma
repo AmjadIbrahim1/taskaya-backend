@@ -1,0 +1,60 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  clerkId       String?         @unique @map("clerk_id") // Optional for JWT users
+  email         String          @unique
+  password      String?         // Optional for Clerk users
+  name          String?
+  imageUrl      String?         @map("image_url")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @default(now()) @updatedAt @map("updated_at") // UPDATED: default for old rows + auto-update
+  tasks         Task[]
+  refreshTokens RefreshToken[]
+
+  @@index([clerkId])
+  @@index([email])
+  @@map("users")
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  title       String    @db.VarChar(500)
+  description String?   @db.Text
+  status      String    @default("pending") @db.VarChar(50)
+  deadline    DateTime?
+  isUrgent    Boolean   @default(false) @map("is_urgent")
+  completed   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, completed])
+  @@index([userId, isUrgent, completed])
+  @@map("tasks")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique @db.Text
+  userId    Int      @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
