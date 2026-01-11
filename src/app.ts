@@ -15,8 +15,9 @@ console.log("Frontend URL:", process.env.FRONTEND_URL);
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:5174", 
-  "https://taskaya-frontend.vercel.app", 
+  "http://localhost:5174",
+  "https://taskaya-frontend.vercel.app",
+  "https://taskaya-frontend-pkvp57q70-amjadibrahim218-3119s-projects.vercel.app", 
   process.env.FRONTEND_URL,
 ].filter(Boolean) as string[];
 
@@ -29,9 +30,11 @@ app.use(
         console.log("✅ Request with no origin (allowed)");
         return callback(null, true);
       }
-      
-      const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed));
-      
+
+      const isAllowed = allowedOrigins.some((allowed) =>
+        origin.startsWith(allowed)
+      );
+
       if (isAllowed) {
         console.log(`✅ CORS allowed for origin: ${origin}`);
         callback(null, true);
@@ -40,7 +43,7 @@ app.use(
         if (process.env.NODE_ENV === "production") {
           callback(new Error("Not allowed by CORS"));
         } else {
-          callback(null, true); 
+          callback(null, true);
         }
       }
     },
@@ -60,7 +63,11 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use((req, _res, next) => {
-  console.log(`📨 ${req.method} ${req.originalUrl} - Origin: ${req.get("origin") || "none"}`);
+  console.log(
+    `📨 ${req.method} ${req.originalUrl} - Origin: ${
+      req.get("origin") || "none"
+    }`
+  );
   next();
 });
 
@@ -75,9 +82,9 @@ app.get("/", (_req, res) => {
 });
 
 app.get("/health", (_req, res) => {
-  res.json({ 
-    status: "ok", 
-    timestamp: new Date().toISOString() 
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -97,18 +104,25 @@ app.use((_req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error("❌ Global Error Handler:");
-  console.error("  Path:", req.path);
-  console.error("  Method:", req.method);
-  console.error("  Error:", err.message);
-  console.error("  Stack:", err.stack);
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error("❌ Global Error Handler:");
+    console.error("  Path:", req.path);
+    console.error("  Method:", req.method);
+    console.error("  Error:", err.message);
+    console.error("  Stack:", err.stack);
 
-  res.status(err.status || 500).json({
-    error: err.message || "Internal server error",
-    path: req.path,
-    timestamp: new Date().toISOString(),
-  });
-});
+    res.status(err.status || 500).json({
+      error: err.message || "Internal server error",
+      path: req.path,
+      timestamp: new Date().toISOString(),
+    });
+  }
+);
 
 export default app;
