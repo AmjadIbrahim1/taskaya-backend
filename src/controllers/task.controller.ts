@@ -1,9 +1,8 @@
-// backend/src/controllers/task.controller.ts - FIXED: استخدام JWTRequest
+// backend/src/controllers/task.controller.ts
 import { Response } from "express";
 import { prisma } from "../config/db";
 import { JWTRequest } from "../middleware/jwt.middleware";
 
-// Add a new task
 export const addTask = async (
   req: JWTRequest,
   res: Response
@@ -49,7 +48,6 @@ export const addTask = async (
   }
 };
 
-// Get all tasks for user
 export const getTasks = async (
   req: JWTRequest,
   res: Response
@@ -83,7 +81,6 @@ export const getTasks = async (
   }
 };
 
-// Update a task
 export const updateTask = async (
   req: JWTRequest,
   res: Response
@@ -102,7 +99,6 @@ export const updateTask = async (
       return;
     }
 
-    // Check if task exists and belongs to user
     const task = await prisma.task.findFirst({
       where: { 
         id: parseInt(id), 
@@ -147,7 +143,6 @@ export const updateTask = async (
   }
 };
 
-// Delete a task
 export const deleteTask = async (
   req: JWTRequest,
   res: Response
@@ -165,7 +160,6 @@ export const deleteTask = async (
       return;
     }
 
-    // Check if task exists and belongs to user
     const task = await prisma.task.findFirst({
       where: { 
         id: parseInt(id), 
@@ -198,7 +192,6 @@ export const deleteTask = async (
   }
 };
 
-// Get completed tasks
 export const getCompletedTasks = async (
   req: JWTRequest,
   res: Response
@@ -231,7 +224,6 @@ export const getCompletedTasks = async (
   }
 };
 
-// Get urgent tasks
 export const getUrgentTasks = async (
   req: JWTRequest,
   res: Response
@@ -267,7 +259,6 @@ export const getUrgentTasks = async (
   }
 };
 
-// Search tasks
 export const searchTasks = async (
   req: JWTRequest,
   res: Response

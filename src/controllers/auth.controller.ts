@@ -1,4 +1,4 @@
-// backend/src/controllers/auth.controller.ts - FIXED WITH BETTER ERROR HANDLING
+// backend/src/controllers/auth.controller.ts
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -37,14 +37,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     console.log("========= JWT REGISTER DEBUG =========");
     console.log("1. Registration attempt for:", email);
 
-    // Validate input
     if (!email || !password) {
       console.log("❌ Missing email or password");
       res.status(400).json({ error: "Email and password are required" });
       return;
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       console.log("❌ Invalid email format");
@@ -52,7 +50,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Password validation
     if (password.length < 6) {
       console.log("❌ Password too short");
       res.status(400).json({ error: "Password must be at least 6 characters" });
@@ -61,7 +58,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     console.log("2. Checking if user exists...");
     
-    // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
@@ -74,12 +70,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     console.log("3. Hashing password...");
     
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     
     console.log("4. Creating user in database...");
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
@@ -96,13 +90,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     console.log("✅ User created successfully:", user.id);
     console.log("5. Generating tokens...");
 
-    // Generate tokens
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
     console.log("6. Storing refresh token...");
 
-    // Store refresh token
     await prisma.refreshToken.create({
       data: {
         token: refreshToken,
@@ -140,7 +132,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.log("========= JWT LOGIN DEBUG =========");
     console.log("1. Login attempt for:", email);
 
-    // Validate input
     if (!email || !password) {
       console.log("❌ Missing credentials");
       res.status(400).json({ error: "Email and password are required" });
@@ -149,7 +140,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     console.log("2. Finding user in database...");
 
-    // Find user
     const user = await prisma.user.findFirst({
       where: { 
         email: email.toLowerCase(),
@@ -172,7 +162,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     console.log("4. Verifying password...");
 
-    // Verify password
     const validPassword = await bcrypt.compare(password, user.password);
     
     console.log("5. Password valid:", validPassword);
@@ -185,13 +174,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     console.log("6. Generating tokens...");
 
-    // Generate tokens
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
     console.log("7. Storing refresh token...");
 
-    // Store refresh token
     await prisma.refreshToken.create({
       data: {
         token: refreshToken,
@@ -234,7 +221,6 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // Verify refresh token
     let decoded;
     try {
       decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET, {
@@ -248,7 +234,6 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // Check if refresh token exists in database
     const storedToken = await prisma.refreshToken.findFirst({
       where: {
         token: refreshToken,
@@ -265,17 +250,14 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // Generate new tokens
     const newAccessToken = generateAccessToken(decoded.id, decoded.email);
     const newRefreshToken = generateRefreshToken(decoded.id, decoded.email);
 
-    // Revoke old refresh token
     await prisma.refreshToken.update({
       where: { id: storedToken.id },
       data: { revoked: true },
     });
 
-    // Store new refresh token
     await prisma.refreshToken.create({
       data: {
         token: newRefreshToken,
@@ -307,7 +289,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Revoke the refresh token
     await prisma.refreshToken.updateMany({
       where: {
         token: refreshToken,
@@ -334,7 +315,6 @@ export const logoutAll = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Revoke all refresh tokens
     await prisma.refreshToken.updateMany({
       where: {
         userId,

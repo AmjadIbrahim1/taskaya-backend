@@ -1,8 +1,7 @@
-// backend/src/middleware/validation.middleware.ts - FIXED
+// backend/src/middleware/validation.middleware.ts
 import { body, param, query, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
-// Validation error handler
 export const handleValidationErrors = (
   req: Request,
   res: Response,
@@ -23,9 +22,7 @@ export const handleValidationErrors = (
   next();
 };
 
-// ============================================
-// AUTH VALIDATORS (JWT LEGACY) - FIXED
-// ============================================
+
 
 export const registerValidator = [
   body("email")
@@ -41,9 +38,7 @@ export const registerValidator = [
     .withMessage("Password is required")
     .isLength({ min: 6, max: 100 })
     .withMessage("Password must be between 6 and 100 characters"),
-  // ❌ REMOVED: Complex password requirements
-  // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-  // .withMessage("Password must contain uppercase, lowercase, and number"),
+
   handleValidationErrors,
 ];
 
@@ -75,9 +70,6 @@ export const logoutValidator = [
   handleValidationErrors,
 ];
 
-// ============================================
-// TASK VALIDATORS
-// ============================================
 
 export const createTaskValidator = [
   body("title")

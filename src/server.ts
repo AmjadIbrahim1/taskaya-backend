@@ -1,4 +1,4 @@
-// backend/src/server.ts - UPDATED DOCUMENTATION
+// backend/src/server.ts
 import app from "./app";
 import { initDB } from "./config/db";
 import dotenv from "dotenv";
@@ -9,10 +9,8 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async (): Promise<void> => {
   try {
-    // Initialize database
     await initDB();
 
-    // Start server
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
       console.log(`\n📝 Taskaya API v4.0 - Authentication Strategy:`);

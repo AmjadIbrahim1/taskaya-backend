@@ -1,4 +1,4 @@
-// backend/src/routes/auth.routes.ts - FIXED WITH DEBUGGING
+// backend/src/routes/auth.routes.ts 
 import { Router } from "express";
 import { 
   register, 
@@ -18,12 +18,10 @@ const router = Router();
 
 console.log("🔧 Setting up auth routes...");
 
-// Test route to verify router is working
 router.get("/test", (_req, res) => {
   res.json({ message: "Auth routes are working!" });
 });
 
-// JWT Authentication Routes
 router.post("/register", registerValidator, register);
 router.post("/login", loginValidator, login);
 router.post("/refresh", refreshTokenValidator, refreshToken);
