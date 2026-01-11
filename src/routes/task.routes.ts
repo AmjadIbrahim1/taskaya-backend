@@ -30,3 +30,4 @@ router.put("/:id", updateTaskValidator, updateTask);
 router.delete("/:id", deleteTaskValidator, deleteTask);
 
 export default router;
+
